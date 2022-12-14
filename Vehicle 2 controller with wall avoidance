@@ -1,0 +1,100 @@
+from controller import Robot, DistanceSensor, Motor
+import numpy as np
+# The Vehicle will turn away from the light
+
+
+# time in [ms] of a simulation step
+TIME_STEP = 64
+
+MAX_SPEED = 10
+
+# create the Robot instance.
+robot = Robot()
+
+# initialize devices
+
+# light sensors for red, blue and green, 0 = left, 1 = right
+ls = []
+lsNames = ['ls0green', 'ls1green','ls0red', 'ls1red','ls0blue', 'ls1blue']
+
+for i in range(len(lsNames)):
+    ls.append(robot.getDevice(lsNames[i]))
+    ls[i].enable(TIME_STEP)
+
+# distance sensors    
+ds = []
+dsNames = ['ds0', 'ds1']
+
+# if a robot encounters a wall these will be the turning counters
+Distance_counter_left = 0
+Distance_counter_right = 0
+
+for i in range(len(dsNames)):
+    ds.append(robot.getDevice(dsNames[i]))
+    ds[i].enable(TIME_STEP)
+
+leftMotor = robot.getDevice('left wheel motor')
+rightMotor = robot.getDevice('right wheel motor')
+leftMotor.setPosition(float('inf'))
+rightMotor.setPosition(float('inf'))
+leftMotor.setVelocity(0.0)
+rightMotor.setVelocity(0.0)
+
+# feedback loop: step simulation until receiving an exit event
+while robot.step(TIME_STEP) != -1:
+    # read sensors outputs
+    lsValues = []
+    for i in range(len(lsNames)):
+        lsValues.append(ls[i].getValue())
+    dsValues = []
+    for i in range(len(dsNames)):
+        dsValues.append(ds[i].getValue())
+    
+    
+
+    #set motor velocity to sensor outputs
+    # green crossed
+    leftspeedgreen = MAX_SPEED-((lsValues[0]/100*3))
+    rightspeedgreen = MAX_SPEED-((lsValues[1]/100*3))
+    #red paralell
+    leftspeedred = lsValues[3]/100*3
+    rightspeedred = lsValues[2]/100*3
+    #blue crossed
+    #leftspeedblue = MAX_SPEED-((lsValues[5]/100*3))
+    #rightspeedblue = MAX_SPEED-((lsValues[4]/100*3))
+    
+    # Obstical detection and charging of turns
+    left_obstacle = dsValues[0] < 700.0
+    if left_obstacle and Distance_counter_right == 0:
+        Distance_counter_left = np.random.randint(5)
+    right_obstacle = dsValues[1] < 700.0
+    if right_obstacle and Distance_counter_left == 0:
+        Distance_counter_right = np.random.randint(5)
+      
+    # speed summation depending of the light sensors
+    #leftspeed = (leftspeedgreen + leftspeedred + leftspeedblue)/3 
+    #rightspeed = (rightspeedgreen + rightspeedred + rightspeedblue)/3
+    
+    # if an obstical is detected a random it turns away from it
+    if Distance_counter_left > 0:
+        leftspeed = MAX_SPEED
+        rightspeed = -MAX_SPEED# + rightspeedblue)/3
+        Distance_counter_left -=1 
+    elif Distance_counter_right > 0:
+        leftspeed = -MAX_SPEED #+ leftspeedblue)/3
+        rightspeed = MAX_SPEED
+        Distance_counter_right -=1
+        
+    else:
+        leftspeed = (leftspeedgreen + leftspeedred)/2# + leftspeedblue)/3 
+        rightspeed = (rightspeedgreen + rightspeedred)/2# + rightspeedblue)/3 
+    
+    #print sensor outputs
+   # print("--------------------")
+    #print (leftspeed)
+    #print (rightspeed)
+
+    
+    # ambient light is 256 so we normalice the sensor values by it
+    leftMotor.setVelocity(leftspeed)
+    rightMotor.setVelocity(rightspeed)
