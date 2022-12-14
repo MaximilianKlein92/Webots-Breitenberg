@@ -1,6 +1,6 @@
 from controller import Robot, DistanceSensor, Motor
 import numpy as np
-# The Vehicle will turn away from the light
+# The Vehicle will turn towards the green the light and speed up by a red light. It turns away from absticals randomly
 
 
 # time in [ms] of a simulation step
@@ -90,7 +90,7 @@ while robot.step(TIME_STEP) != -1:
         rightspeed = (rightspeedgreen + rightspeedred)/2# + rightspeedblue)/3 
     
     #print sensor outputs
-   # print("--------------------")
+    #print("--------------------")
     #print (leftspeed)
     #print (rightspeed)
 
