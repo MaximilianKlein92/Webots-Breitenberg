@@ -1,0 +1,212 @@
+from controller import Robot, DistanceSensor, Motor
+import numpy as np
+
+# configuration modell function parameters
+a = 10 #Rate of Addition
+b = 1 #Rate of Pertubation
+ß = 0.01 #overall pertubation
+n = 10
+z = 1000
+h = 0.001 # the same as the TIME_STEP! but in seconds
+W = np.zeros((n,n)) # empty connectivity matrix
+X = np.full(n, z/n) # Our-degrees
+Y = np.full(n, z/n) # In-Degrees
+pertubeven = np.full((n,n), ß)
+Stim = np.zeros((n,n))
+WtOverTime = np.zeros(2, np.matrix)
+# Creating of the time arrays
+Wt = np.zeros(2, np.matrix) #an array with matrixes
+Xt = np.zeros(2, np.matrix) #an array with matrixes
+Yt = np.zeros(2, np.matrix) #an array with matrixes
+Zt = np.zeros(2)
+
+#setting the sarting values and matrixes
+Wt[0] = W
+Xt[0] = X
+Yt[0] = Y
+Zt[0] = z
+#-----------------------------------------------------
+# Factors to determan where the bot should drive towards or away
+GC = 0 #green-paralell
+GP = 0 #greencrossed
+RC = 0 #red-crossed
+RP = 0 #red-paralell
+BC = 0 #bluecrossed
+BP = 0 #blue-paralell
+#---------------------------------------------------------
+
+# The Vehicle will turn away from the light
+
+# time in [ms] of a simulation step
+TIME_STEP = 1
+
+MAX_SPEED = 10
+MAX_SPEED_Inhibition = 10
+SPEED_SUM_Left = 0
+SPEED_SUM_right = 0
+# create the Robot instance.
+robot = Robot()
+
+# initialize devices
+
+# enable baterie device
+robot.batterySensorEnable(TIME_STEP) #samplingtime in ms
+LastBatterie = 0 #variable for storing the last baterie value
+
+# light sensors for red, blue and green, 0 = left, 1 = right
+ls = []
+lsNames = ['ls0green', 'ls1green','ls0red', 'ls1red','ls0blue', 'ls1blue']
+
+for i in range(len(lsNames)):
+    ls.append(robot.getDevice(lsNames[i]))
+    ls[i].enable(TIME_STEP)
+
+# distance sensors    
+ds = []
+dsNames = ['ds0', 'ds1']
+
+for i in range(len(dsNames)):
+    ds.append(robot.getDevice(dsNames[i]))
+    ds[i].enable(TIME_STEP)
+    
+# if a robot encounters a wall these will be the turning counters
+Distance_counter_left = 0
+Distance_counter_right = 0    
+
+# setting the wheels and motor up -----------------------------------------
+leftMotor = robot.getDevice('left wheel motor')
+rightMotor = robot.getDevice('right wheel motor')
+leftMotor.setPosition(float('inf')) #inf = they can turn for ever
+rightMotor.setPosition(float('inf'))
+leftMotor.setVelocity(0.0)
+rightMotor.setVelocity(0.0)
+
+# feedback loop: step simulation until receiving an exit event
+while robot.step(TIME_STEP) != -1:
+    
+# read sensors outputs and put thm in a list----------------------------------
+    lsValues = []
+    for i in range(len(lsNames)):
+        lsValues.append(ls[i].getValue())
+    dsValues = []
+    for i in range(len(dsNames)):
+        dsValues.append(ds[i].getValue())
+    
+    # when the Robot is loading it stops    
+    if robot.batterySensorGetValue() > LastBatterie:
+        BatterieSpeed = 10
+    else :
+        BatterieSpeed = 0
+#-------------------------------------------------------------
+# Stimmulation of the Brain
+    if BatterieSpeed == 10:
+        Stim[0] += b
+        Stim.T[0] += b
+    if lsValues[0]/100*3 > 0.5 and  BatterieSpeed == 10:
+        Stim[1] += b
+        Stim.T[1] += b  
+    if lsValues[1]/100*3 > 0.5 and  BatterieSpeed == 10:
+        Stim[2] += b
+        Stim.T[2] += b
+    if lsValues[2]/100*3 > 0.5 and  BatterieSpeed == 10:
+        Stim[3] += b 
+        Stim.T[3] += b    
+    if lsValues[3]/100*3 > 0.5 and  BatterieSpeed == 10:
+        Stim[4] += b
+        Stim.T[4] += b
+    if lsValues[4]/100*3 > 0.5 and  BatterieSpeed == 10:
+        Stim[5] += b
+        Stim.T[5] += b      
+    if lsValues[5]/100*3 > 0.5 and  BatterieSpeed == 10:
+        Stim[6] += b
+        Stim.T[6] += b
+             
+    #print(Stim)      
+#-------------------------------------------------------------   
+# Updating the Brain
+
+    # Matrix Evolution
+    #Wt[0] = Wt[0] - (Wt[0] * pertubeven)*h
+    Wt[0] = Wt[0] - (Wt[0] * Stim)*h
+    Wt[1] = Wt[0] + ( (a * 1/(Zt[0]) * (np.outer(Yt[0],Xt[0].T))))* h  
+    Xt[1] = X - np.sum(Wt[0],axis=0) - ( a * X - np.sum(Wt[0],axis=0)  )*h 
+    Yt[1] = Y - np.sum(Wt[0],axis=1) - ( a * Y - np.sum(Wt[0],axis=1)  )*h 
+    Zt[1] = z - np.sum(Wt[1])
+    
+    #Setting the start values again for the next loop
+    Wt[0] = Wt[1]
+    Xt[0] = Xt[1]
+    Yt[0] = Yt[1]
+    Zt[0] = Zt[1]
+    Stim = np.zeros((n,n))
+    
+    #print(Wt[0][0,1])
+#------------------------------------------------------------------  
+# Factorberechnung für die Kreuzung
+
+    if Wt[0][0,1] > 10:
+        GC = ((Wt[0][0,1] - 10 / 10) * 10**-2) * 5
+        print(GC)
+
+
+#---------------------------------------------------------------
+#Light sensor outputs into Speeds
+    # green crossed
+    leftspeedgreen =  (GC * (lsValues[0]/100*3)) + (GP * (lsValues[1]/100*3))
+    rightspeedgreen =  (GC* (lsValues[1]/100*3)) + (GP * (lsValues[0]/100*3))
+    #red paralell
+    leftspeedred =  RP * lsValues[2]/100*3 + RC * lsValues[3]/100*3
+    rightspeedred = RP * lsValues[3]/100*3 + RC * lsValues[2]/100*3
+    #blue crossed
+    leftspeedblue = (BP * (lsValues[5]/100*3)) + BC * lsValues[5]/100*3
+    rightspeedblue = (BP * (lsValues[4]/100*3)) + BC * lsValues[4]/100*3
+    
+# Obstical detection and charging of turns---------------------------
+    left_obstacle = dsValues[0] < 700.0
+    if left_obstacle and Distance_counter_right == 0:
+        Distance_counter_left = np.random.randint(10)
+    right_obstacle = dsValues[1] < 700.0
+    if right_obstacle and Distance_counter_left == 0:
+        Distance_counter_right = np.random.randint(10)
+      
+    # speed summation depending of the light sensors
+    #leftspeed = (leftspeedgreen + leftspeedred + leftspeedblue)/3 
+    #rightspeed = (rightspeedgreen + rightspeedred + rightspeedblue)/3
+    
+    # if an obstical is detected a random it turns away from it
+    if Distance_counter_left > 0:
+        leftspeed = MAX_SPEED
+        rightspeed = -MAX_SPEED# + rightspeedblue)/3
+        Distance_counter_left -=1 
+    elif Distance_counter_right > 0:
+        leftspeed = -MAX_SPEED #+ leftspeedblue)/3
+        rightspeed = MAX_SPEED
+        Distance_counter_right -=1
+#----------------------------------------------------------------------------        
+    # Allucate the speeds MAX_SPEED_Inhibition SPEED_SUM_Left = 0 SPEED_SUM_right = 0
+    else:
+        SPEED_SUM_Left = BatterieSpeed + (leftspeedgreen) + (leftspeedred) + leftspeedblue
+        SPEED_SUM_right = BatterieSpeed + (rightspeedgreen) + (rightspeedred) + rightspeedblue
+        
+        
+        if SPEED_SUM_Left >= MAX_SPEED_Inhibition:
+            SPEED_SUM_Left = MAX_SPEED_Inhibition
+        if   SPEED_SUM_right >= MAX_SPEED_Inhibition:
+            SPEED_SUM_right = MAX_SPEED_Inhibition
+  
+        leftspeed = MAX_SPEED - SPEED_SUM_Left
+        rightspeed = MAX_SPEED - SPEED_SUM_right 
+
+# ensuring the Speed does not exeed the maximum Speed
+    if leftspeed >= MAX_SPEED:
+        rightspeed = MAX_SPEED
+    if rightspeed >= MAX_SPEED:
+        rightspeed = MAX_SPEED
+    
+    # ambient light is 256 so we normalice the sensor values by it
+    leftMotor.setVelocity(leftspeed)
+    rightMotor.setVelocity(rightspeed)
+    
+    #Output o the batterie
+    LastBatterie = robot.batterySensorGetValue()
+    
