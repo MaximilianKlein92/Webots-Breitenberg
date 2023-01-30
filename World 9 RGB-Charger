@@ -1,0 +1,871 @@
+#VRML_SIM R2023a utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/1c1d7ea147af8ad97c579246a8a7603c4aeb40b3/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/1c1d7ea147af8ad97c579246a8a7603c4aeb40b3/projects/objects/floors/protos/RectangleArena.proto"
+
+WorldInfo {
+  info [
+    "Example use of a Battery device."
+  ]
+  title "Battery"
+}
+Viewpoint {
+  orientation -0.006646419184876238 0.9999026326414189 0.01226989603781778 0.993380756822949
+  position -4.160536780384604 -0.03136447470040614 6.309768012727192
+  bloomThreshold 0.5
+}
+TexturedBackground {
+}
+RectangleArena {
+  floorSize 3 3
+}
+DEF Charger_red->green Charger {
+  translation 0.893012 1.96595 -1.1724e-13
+  rotation 0 0 1 -1.570795
+  children [
+    Transform {
+      translation 0 0 0.15
+      children [
+        Shape {
+          appearance PBRAppearance {
+            baseColor 0.1 0.1 0.1
+            transparency 0.7
+            roughness 0.2189099510000001
+            metalness 0
+            emissiveColor 1 0 0
+          }
+          geometry DEF CHARGER_GEOM Cylinder {
+            height 0.3
+            radius 0.2
+            subdivision 24
+          }
+        }
+      ]
+    }
+    Transform {
+      translation 0 0 0.15
+      children [
+        PointLight {
+          attenuation 0 0 12
+          color 1 0 0
+          intensity 0.5
+        }
+      ]
+    }
+  ]
+  name "charger1(1)"
+  battery [
+    100, 100, 10
+  ]
+  radius 0.2
+  emissiveColor 1 0 0
+}
+DEF Charger_red->green Charger {
+  translation 0.391529 1.92802 3.37504e-14
+  rotation 0 0 1 -1.570795
+  children [
+    Transform {
+      translation 0 0 0.15
+      children [
+        Shape {
+          appearance PBRAppearance {
+            baseColor 0.1 0.1 0.1
+            transparency 0.7
+            roughness 0.2189099510000001
+            metalness 0
+            emissiveColor 1 0 0
+          }
+          geometry DEF CHARGER_GEOM Cylinder {
+            height 0.3
+            radius 0.2
+            subdivision 24
+          }
+        }
+      ]
+    }
+    Transform {
+      translation 0 0 0.15
+      children [
+        PointLight {
+          attenuation 0 0 12
+          color 1 0 0
+          intensity 0.5
+        }
+      ]
+    }
+  ]
+  name "charger1(5)"
+  battery [
+    100, 100, 10
+  ]
+  radius 0.2
+  emissiveColor 1 0 0
+}
+DEF Charger_red->green Charger {
+  translation 1.11407 1.87767 -1.36335e-13
+  rotation 0 0 1 -1.570795
+  children [
+    Transform {
+      translation 0 0 0.15
+      children [
+        Shape {
+          appearance PBRAppearance {
+            baseColor 0.1 0.1 0.1
+            transparency 0.7
+            roughness 0.2189099510000001
+            metalness 0
+            emissiveColor 1 0 0
+          }
+          geometry DEF CHARGER_GEOM Cylinder {
+            height 0.3
+            radius 0.2
+            subdivision 24
+          }
+        }
+      ]
+    }
+    Transform {
+      translation 0 0 0.15
+      children [
+        PointLight {
+          attenuation 0 0 12
+          color 1 0 0
+          intensity 0.5
+        }
+      ]
+    }
+  ]
+  name "charger1(4)"
+  battery [
+    100, 100, 10
+  ]
+  radius 0.2
+  emissiveColor 1 0 0
+}
+DEF Charger_red->green Charger {
+  translation -0.793941 -0.954546 4.44098e-16
+  rotation 0 0 1 -1.570795
+  children [
+    Transform {
+      translation 0 0 0.15
+      children [
+        Shape {
+          appearance PBRAppearance {
+            baseColor 0 0 0
+            transparency 0.7
+            roughness 0.2189099510000001
+            metalness 0
+            emissiveColor 0 1 0
+          }
+          geometry DEF CHARGER_GEOM Cylinder {
+            height 0.3
+            radius 0.2
+            subdivision 24
+          }
+        }
+      ]
+    }
+    Transform {
+      translation 0 0 0.15
+      children [
+        PointLight {
+          attenuation 0 0 12
+          color 0 1 0
+          intensity 0.5
+        }
+      ]
+    }
+  ]
+  name "charger1(2)"
+  battery [
+    100, 100, 10
+  ]
+  radius 0.2
+}
+DEF Charger_red->green Charger {
+  translation 0.736849 0.84078 -3.59713e-14
+  rotation 0 0 1 -1.570795
+  children [
+    Transform {
+      translation 0 0 0.15
+      children [
+        Shape {
+          appearance PBRAppearance {
+            baseColor 0.1 0.1 0.1
+            transparency 0.7
+            roughness 0.2189099510000001
+            metalness 0
+            emissiveColor 0 1 0
+          }
+          geometry DEF CHARGER_GEOM Cylinder {
+            height 0.3
+            radius 0.2
+            subdivision 24
+          }
+        }
+      ]
+    }
+    Transform {
+      translation 0 0 0.15
+      children [
+        PointLight {
+          attenuation 0 0 12
+          color 0 1 0
+          intensity 0.5
+        }
+      ]
+    }
+  ]
+  name "charger1(3)"
+  battery [
+    100, 100, 10
+  ]
+  radius 0.2
+}
+Robot {
+  translation -0.843366 1.34616 -8.41549e-14
+  rotation 0 0 -1 1.618
+  children [
+    Display {
+      width 640
+      height 480
+    }
+    Compass {
+    }
+    Speaker {
+      translation 0 0 0.085
+      children [
+        Shape {
+          appearance PBRAppearance {
+            baseColor 0.2 0.2 0.2
+          }
+          geometry Cylinder {
+            height 0.01
+            radius 0.03
+          }
+        }
+      ]
+    }
+    LightSensor {
+      translation 0.042 0.02 0.063
+      rotation 0 0 1 0.5235996938995747
+      name "ls0green"
+      colorFilter 0 1 0
+    }
+    LightSensor {
+      translation 0.042 -0.02 0.063
+      rotation 0 0 1 -0.5236003061004253
+      name "ls1green"
+      colorFilter 0 1 0
+    }
+    LightSensor {
+      translation 0.042 -0.02 0.063
+      rotation 0 0 1 -0.5236003061004253
+      name "ls1red"
+      colorFilter 1 0 0
+    }
+    LightSensor {
+      translation 0.042 0.02 0.063
+      rotation 0 0 1 0.5236003061004253
+      name "ls0red"
+      colorFilter 1 0 0
+    }
+    LightSensor {
+      translation 0.042 0.02 0.063
+      rotation 0 0 1 0.5236003061004253
+      name "ls0blue"
+      colorFilter 0 0 1
+    }
+    LightSensor {
+      translation 0.042 -0.02 0.063
+      rotation 0 0 1 -0.5236003061004253
+      name "ls1blue"
+      colorFilter 0 0 1
+    }
+    Transform {
+      translation 0 0 0.0415
+      rotation 0 0 1 -1.570796
+      children [
+        Shape {
+          appearance PBRAppearance {
+            baseColor 0.0820075 0.364731 0.8
+            roughness 1
+            metalness 0
+          }
+          geometry DEF BODY Cylinder {
+            height 0.08
+            radius 0.045
+          }
+        }
+      ]
+    }
+    HingeJoint {
+      jointParameters HingeJointParameters {
+        axis 0 1 0
+        anchor 0 0 0.025
+      }
+      device [
+        RotationalMotor {
+          name "left wheel motor"
+          consumptionFactor 70
+          sound ""
+        }
+        PositionSensor {
+          name "left wheel sensor"
+        }
+      ]
+      endPoint Solid {
+        translation 0 0.04499999999999986 0.025
+        rotation 0.13448695438559718 -0.1344869543855968 -0.9817466670176033 1.5892169999999952
+        children [
+          DEF WHEEL Transform {
+            rotation 0.577656895078166 0.5771968951617173 -0.5771968951617173 -2.093935
+            children [
+              Shape {
+                appearance PBRAppearance {
+                  baseColor 1 0 0
+                  roughness 1
+                  metalness 0
+                }
+                geometry Cylinder {
+                  height 0.01
+                  radius 0.025
+                }
+              }
+            ]
+          }
+        ]
+        name "left wheel"
+        boundingObject USE WHEEL
+        physics DEF PHYSICS_WHEEL Physics {
+          density -1
+          mass 0.05
+        }
+      }
+    }
+    HingeJoint {
+      jointParameters HingeJointParameters {
+        axis 0 1 0
+        anchor 0 0 0.025
+      }
+      device [
+        RotationalMotor {
+          name "right wheel motor"
+          consumptionFactor 70
+          sound ""
+        }
+        PositionSensor {
+          name "right wheel sensor"
+        }
+      ]
+      endPoint Solid {
+        translation 0 -0.04499999999999964 0.025
+        rotation -0.06235700094427171 0.062357000944273405 -0.9961040150840031 1.574699999999994
+        children [
+          USE WHEEL
+        ]
+        name "right wheel"
+        boundingObject USE WHEEL
+        physics USE PHYSICS_WHEEL
+      }
+    }
+    DistanceSensor {
+      translation 0.042 0.02 0.063
+      rotation 0 0 -1 -0.499205
+      children [
+        DEF SENSOR Transform {
+          rotation 0.577656895078166 0.5771968951617173 -0.5771968951617173 -2.093935
+          children [
+            Shape {
+              appearance PBRAppearance {
+                baseColor 0.975691 0.981481 0.0252992
+                roughness 1
+                metalness 0
+              }
+              geometry Cylinder {
+                height 0.004
+                radius 0.008
+              }
+            }
+          ]
+        }
+      ]
+      name "ds0"
+    }
+    DistanceSensor {
+      translation 0.042 -0.02 0.063
+      rotation 0 0 1 -0.500795
+      children [
+        USE SENSOR
+      ]
+      name "ds1"
+    }
+    DEF SMILE Transform {
+      translation 0.036 0 0.025
+      rotation 0.25056300542381216 -0.9351130202419243 -0.25056300542381216 1.637834
+      children [
+        Shape {
+          appearance PBRAppearance {
+            baseColor 0.721569 0.290196 0.290196
+            roughness 1
+            metalness 0
+          }
+          geometry Cylinder {
+            height 0.018
+            radius 0.009
+            subdivision 3
+          }
+        }
+      ]
+    }
+  ]
+  name "MyBot(1)"
+  boundingObject Transform {
+    translation 0 0 0.0415
+    rotation 0 0 1 -1.570796
+    children [
+      USE BODY
+    ]
+  }
+  physics Physics {
+    density -1
+    mass 0.5
+  }
+  controller "V2_CGM_BiggerNetwork"
+  battery [
+    200, 200, 20
+  ]
+  cpuConsumption 0.5
+}
+DEF GREEN_BOX Solid {
+  translation -0.408668 0.325974 0.05
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0 1 0
+        roughness 0.2189099510000001
+        metalness 0
+      }
+      geometry DEF BOX0 Box {
+        size 0.1 0.23 0.1
+      }
+    }
+  ]
+  name "green box"
+  boundingObject Shape {
+    appearance PBRAppearance {
+      metalness 0
+    }
+    geometry USE BOX0
+  }
+}
+DEF BLUE_BOX Solid {
+  translation -0.347112 -0.523667 0.05
+  rotation 0 0 1 0.31
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0 0 1
+        roughness 0.519341125
+        metalness 0
+      }
+      geometry DEF BOX1 Box {
+        size 0.1 0.2 0.1
+      }
+    }
+  ]
+  name "blue box"
+  boundingObject Shape {
+    appearance PBRAppearance {
+      metalness 0
+    }
+    geometry USE BOX1
+  }
+}
+DEF YELLOW_BOX Solid {
+  translation 0.231463 -0.602898 0.05
+  rotation 0 0 1 0.4
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 1 1 0
+        roughness 0.03934117200000009
+        metalness 0
+      }
+      geometry DEF BOX2 Box {
+        size 0.3 0.05 0.1
+      }
+    }
+  ]
+  name "yellow box"
+  boundingObject Shape {
+    appearance PBRAppearance {
+      roughness 1.1102230246251565e-16
+      metalness 0
+    }
+    geometry USE BOX2
+  }
+}
+DEF PINK_BOX Solid {
+  translation 0.335391 0.362719 0.05
+  rotation 0 0 1 1.8326
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 1 0.1 0.3
+        roughness 0.16827074099999995
+        metalness 0
+      }
+      geometry DEF BOX3 Box {
+        size 0.08 0.15 0.1
+      }
+    }
+  ]
+  name "red box"
+  boundingObject Shape {
+    appearance PBRAppearance {
+      roughness 1.1102230246251565e-16
+      metalness 0
+    }
+    geometry USE BOX3
+  }
+}
+DEF CHARGER Charger {
+  translation 0.756797 -0.157546 -1.77636e-15
+  rotation 0 0 1 3.14159
+  children [
+    Transform {
+      translation 0 0 0.15
+      children [
+        Shape {
+          appearance PBRAppearance {
+            baseColor 0 0 1
+            transparency 0.7
+            roughness 0.2189099510000001
+            metalness 0
+            emissiveColor 0 0 1
+          }
+          geometry DEF CHARGER_GEOM Cylinder {
+            height 0.3
+            radius 0.2
+            subdivision 24
+          }
+        }
+        PointLight {
+          attenuation 0 0 12
+          color 0 0 1
+          intensity 0.5
+        }
+      ]
+    }
+  ]
+  name "charger0"
+  battery [
+    0, 200, 0
+  ]
+  radius 0.2
+  emissiveColor 0 0 1
+}
+DEF CHARGER Charger {
+  translation 0.0642392 -1.00886 -1.62537e-13
+  rotation 0 0 1 3.14159
+  children [
+    Transform {
+      translation 0 0 0.15
+      children [
+        Shape {
+          appearance PBRAppearance {
+            baseColor 0 0 1
+            transparency 0.7
+            roughness 0.2189099510000001
+            metalness 0
+            emissiveColor 0 0 1
+          }
+          geometry DEF CHARGER_GEOM Cylinder {
+            height 0.3
+            radius 0.2
+            subdivision 24
+          }
+        }
+        PointLight {
+          attenuation 0 0 12
+          color 0 0 1
+          intensity 0.5
+        }
+      ]
+    }
+  ]
+  name "charger0(2)"
+  battery [
+    0, 200, 0
+  ]
+  radius 0.2
+  emissiveColor 0 0 1
+}
+DEF CHARGER Charger {
+  translation -0.802298 0.866812 -4.79616e-14
+  rotation 0 0 1 3.14159
+  children [
+    Transform {
+      translation 0 0 0.15
+      children [
+        Shape {
+          appearance PBRAppearance {
+            baseColor 0 0 1
+            transparency 0.7
+            roughness 0.2189099510000001
+            metalness 0
+            emissiveColor 0 0 1
+          }
+          geometry DEF CHARGER_GEOM Cylinder {
+            height 0.3
+            radius 0.2
+            subdivision 24
+          }
+        }
+        PointLight {
+          attenuation 0 0 12
+          color 0 0 1
+          intensity 0.5
+        }
+      ]
+    }
+  ]
+  name "charger0(4)"
+  battery [
+    0, 200, 0
+  ]
+  radius 0.2
+  emissiveColor 0 0 1
+}
+DEF CHARGER Charger {
+  translation 0.00248609 0.81841 -1.24345e-14
+  rotation 0 0 1 3.14159
+  children [
+    Transform {
+      translation 0 0 0.15
+      children [
+        Shape {
+          appearance PBRAppearance {
+            baseColor 1 0 0
+            transparency 0.7
+            roughness 0.2189099510000001
+            metalness 0
+            emissiveColor 1 0 0
+          }
+          geometry DEF CHARGER_GEOM Cylinder {
+            height 0.3
+            radius 0.2
+            subdivision 24
+          }
+        }
+        PointLight {
+          attenuation 0 0 12
+          color 1 0 0
+          intensity 0.5
+        }
+      ]
+    }
+  ]
+  name "charger0(1)"
+  battery [
+    0, 100, 0
+  ]
+  radius 0.2
+}
+DEF CHARGER Charger {
+  translation -0.764215 -0.0951482 5.59553e-14
+  rotation 0 0 1 3.14159
+  children [
+    Transform {
+      translation 0 0 0.15
+      children [
+        Shape {
+          appearance PBRAppearance {
+            baseColor 1 0 0
+            transparency 0.7
+            roughness 0.2189099510000001
+            metalness 0
+            emissiveColor 1 0 0
+          }
+          geometry DEF CHARGER_GEOM Cylinder {
+            height 0.3
+            radius 0.2
+            subdivision 24
+          }
+        }
+        PointLight {
+          attenuation 0 0 12
+          color 1 0 0
+          intensity 0.5
+        }
+      ]
+    }
+  ]
+  name "charger0(5)"
+  battery [
+    0, 100, 0
+  ]
+  radius 0.2
+}
+DEF CHARGER Charger {
+  translation 0.835685 -0.974614 -1.03473e-13
+  rotation 0 0 1 3.14159
+  children [
+    Transform {
+      translation 0 0 0.15
+      children [
+        Shape {
+          appearance PBRAppearance {
+            baseColor 1 0 0
+            transparency 0.7
+            roughness 0.2189099510000001
+            metalness 0
+            emissiveColor 1 0 0
+          }
+          geometry DEF CHARGER_GEOM Cylinder {
+            height 0.3
+            radius 0.2
+            subdivision 24
+          }
+        }
+        PointLight {
+          attenuation 0 0 12
+          color 1 0 0
+          intensity 0.5
+        }
+      ]
+    }
+  ]
+  name "charger0(3)"
+  battery [
+    0, 100, 0
+  ]
+  radius 0.2
+}
+DEF Charger_red->green Charger {
+  translation -0.0241318 -0.0838132 -1.68753e-14
+  rotation 0 0 1 -1.570795
+  children [
+    Transform {
+      translation 0 0 0.15
+      children [
+        Shape {
+          appearance PBRAppearance {
+            baseColor 0.1 0.1 0.1
+            transparency 0.7
+            roughness 0.2189099510000001
+            metalness 0
+            emissiveColor 0 1 0
+          }
+          geometry USE CHARGER_GEOM
+        }
+      ]
+    }
+    Transform {
+      translation 0 0 0.15
+      children [
+        PointLight {
+          attenuation 0 0 12
+          color 0 1 0
+          intensity 0.5
+        }
+      ]
+    }
+  ]
+  name "charger1"
+  battery [
+    100, 100, 10
+  ]
+  radius 0.2
+}
+Charger {
+  translation 0.160327 -1.81125 2.08722e-14
+  children [
+    Transform {
+      translation 0 0 0.15
+      children [
+        Shape {
+          appearance PBRAppearance {
+            baseColor 0 1 0
+            transparency 0.7
+            roughness 0.2189099510000001
+            metalness 0
+            emissiveColor 0 1 0
+          }
+          geometry USE CHARGER_GEOM
+        }
+        PointLight {
+          attenuation 0 0 12
+          color 0 1 0
+          intensity 0.5
+        }
+      ]
+    }
+  ]
+  name "charger2"
+  battery [
+    0, 100, 20
+  ]
+  radius 0.2
+}
+Charger {
+  translation 0.560816 -1.90807 2.13163e-14
+  children [
+    Transform {
+      translation 0 0 0.15
+      children [
+        Shape {
+          appearance PBRAppearance {
+            baseColor 0 1 0
+            transparency 0.7
+            roughness 0.2189099510000001
+            metalness 0
+            emissiveColor 0 1 0
+          }
+          geometry USE CHARGER_GEOM
+        }
+        PointLight {
+          attenuation 0 0 12
+          color 0 1 0
+          intensity 0.5
+        }
+      ]
+    }
+  ]
+  name "charger2(2)"
+  battery [
+    0, 100, 0
+  ]
+  radius 0.2
+}
+Charger {
+  translation -0.1692 -1.80388 2.04281e-14
+  children [
+    Transform {
+      translation 0 0 0.15
+      children [
+        Shape {
+          appearance PBRAppearance {
+            baseColor 0 1 0
+            transparency 0.7
+            roughness 0.2189099510000001
+            metalness 0
+            emissiveColor 0 1 0
+          }
+          geometry USE CHARGER_GEOM
+        }
+        PointLight {
+          attenuation 0 0 12
+          color 0 1 0
+          intensity 0.5
+        }
+      ]
+    }
+  ]
+  name "charger2(1)"
+  battery [
+    0, 100, 0
+  ]
+  radius 0.2
+}
