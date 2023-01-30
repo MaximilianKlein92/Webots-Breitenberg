@@ -1,0 +1,361 @@
+from controller import Robot, DistanceSensor, Motor, Speaker, Compass, Display
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+
+#----------------------------SETUP------------------------------------------
+
+#------------ configuration modell function parameters---------
+a = 13 #Rate of Addition /Connecting/Repair
+b = 12 #Rate of Pertubation/Breaking Up 
+
+ß = .1 #overall pertubation / forgetting / "Network activity"
+
+n = 100 # number of nodes
+z = 100000 # number of possible edges
+h = 0.001 # the same as the TIME_STEP! but in seconds
+W = np.zeros((n,n)) # empty connectivity matrix
+X = np.full(n, z/n) # Our-degrees
+Y = np.full(n, z/n) # In-Degrees
+pertubeven = np.full((n,n), ß)
+Stim = np.zeros((n,n))
+WtOverTime = np.zeros(240000, np.matrix)
+WtCounter = 0
+# Creating of the time arrays
+Wt = np.zeros(2, np.matrix) #an array with matrixes
+Xt = np.zeros(2, np.matrix) #an array with matrixes
+Yt = np.zeros(2, np.matrix) #an array with matrixes
+Zt = np.zeros(2)
+
+#setting the start values and matrixes
+Wt[0] = W
+Xt[0] = X
+Yt[0] = Y
+Zt[0] = z
+
+#------------------SOME-VARIABLES------------------------------------
+
+# counts the loops and can be used to get readouts at specific times or intervals
+Counter = 0
+Penalty = 0
+
+#------------------TEXT-FILE-CREATION---------------------------------------
+# Creates a file named based on the learnig values
+filename = "1" + "a = "+ str(a) + " b= " + str(b) 
+f = open (filename + ".txt", "w")
+
+
+#--------Vehicle initalisatio of Devices and Motors-------------
+# time in [32 ms] of a simulation step
+TIME_STEP = 32
+# create the Robot instance.
+robot = Robot()
+#Setting up the speaker systhem of the robot for audio playback
+speaker = Speaker("speaker")
+#gettig a sense of direction with a compass device
+compass = Compass("compass")
+compass.enable(TIME_STEP)
+# enable baterie device
+robot.batterySensorEnable(TIME_STEP) #samplingtime in ms
+LastBatterie = 0 #variable for storing the last baterie value
+# enable speaker
+Speaker.playSound(speaker,speaker,"NerverGoonna.wav",1,1,0,True)
+#enable display
+display = Display("display")
+DisplayWidthd = display.getWidth()
+DisplayHeight = display.getHeight()
+
+# light sensors for red, blue and green, 0 = left, 1 = right
+ls = []
+lsNames = ['ls0green', 'ls1green','ls0red', 'ls1red','ls0blue', 'ls1blue']
+
+for i in range(len(lsNames)):
+    ls.append(robot.getDevice(lsNames[i]))
+    ls[i].enable(TIME_STEP)
+
+# distance sensors    
+ds = []
+dsNames = ['ds0', 'ds1']
+
+for i in range(len(dsNames)):
+    ds.append(robot.getDevice(dsNames[i]))
+    ds[i].enable(TIME_STEP)
+    
+# if a robot encounters a wall these will be the turning counters
+Distance_counter_left = 0
+Distance_counter_right = 0
+#making the turns predictable
+np.random.seed(1)
+TurnCountArray = np.random.randint(1,10, 100) #giving 100 random Counter for the random turning of the vehicle when facing a wall
+TurnCounter = 0 # a variable helping to cicle trough the TurnCountArray    
+
+# setting up wheels and motor  -----------------------------------------
+leftMotor = robot.getDevice('left wheel motor')
+rightMotor = robot.getDevice('right wheel motor')
+leftMotor.setPosition(float('inf')) #inf = they can turn for ever
+rightMotor.setPosition(float('inf'))
+leftMotor.setVelocity(0.0)
+rightMotor.setVelocity(0.0)
+leftspeed = 0
+rightspeed = 0
+MAX_SPEED = 10 # 26.6 cm/s = 0,85 cm/ 32 ms = 0,85cm/TIME_STEP
+MAX_SPEED_Inhibition = 10
+SPEED_SUM_Left = 0
+SPEED_SUM_right = 0
+
+#-------------------SETUP--END--------------------------------
+
+# feedback loop: step simulation until receiving an exit event
+while robot.step(TIME_STEP) != -1:
+    
+# ----------read sensors outputs and put them in a list----------------------------------
+    lsValues = []
+    for i in range(len(lsNames)):
+        lsValues.append(ls[i].getValue())
+    dsValues = []
+    for i in range(len(dsNames)):
+        dsValues.append(ds[i].getValue())
+    
+    # when the Robot is loading the batterie it stops - inhibition to the MaxSPeed with the Max inhibition  
+    if robot.batterySensorGetValue() > LastBatterie:
+        BatterieSpeed = MAX_SPEED_Inhibition
+    else :
+        BatterieSpeed = 0
+
+#---- Stimmulation of the "Brain" ---------------------------------------
+    #If the Batterie is charged the Assosiation is linked with the coulor the robot currently sees
+    if BatterieSpeed == MAX_SPEED_Inhibition:
+        Stim[0] += b 
+        Stim.T[0] += b
+        
+        ß -= ß/1000 #the network activity/forgetting downregulates when learing 
+        Penalty -= 1 #if it stops and gets energie the penalty term gets reduced
+        
+    # If green is visible on the left
+    if lsValues[0]/100*3 > 1.7 and  BatterieSpeed == MAX_SPEED_Inhibition:
+        Stim[10] += b 
+        Stim.T[10] += b 
+     # If green is visible on the right
+    if lsValues[1]/100*3 > 1.7  and  BatterieSpeed == MAX_SPEED_Inhibition:
+        Stim[20] += b
+        Stim.T[20] += b
+     # If red is visible on the left
+    if lsValues[2]/100*3 > 1.7  and  BatterieSpeed == MAX_SPEED_Inhibition:
+        Stim[30] += b 
+        Stim.T[30] += b  
+     # If red is visible on the right
+    if lsValues[3]/100*3 > 1.7  and  BatterieSpeed == MAX_SPEED_Inhibition:
+        Stim[40] += b
+        Stim.T[40] += b
+     # If blue is visible on the left
+    if lsValues[4]/100*3 > 1.7  and  BatterieSpeed == MAX_SPEED_Inhibition:
+        Stim[50] += b
+        Stim.T[50] += b  
+     # If blue is visible on the right  
+    if lsValues[5]/100*3 > 1.7  and  BatterieSpeed == MAX_SPEED_Inhibition:
+        Stim[60] += b
+        Stim.T[60] += b
+
+     
+#-----------Updating the Network--------------------------------------------
+
+    # Matrix Evolution
+    Wt[0] = Wt[0] - (Wt[0] * pertubeven)*h
+    Wt[0] = Wt[0] - (Wt[0] * Stim)*h
+    Wt[1] = Wt[0] + ( (a * 1/(Zt[0]) * (np.outer(Yt[0],Xt[0].T))))* h  
+    Xt[1] = X - np.sum(Wt[0],axis=0) - ( a * X - np.sum(Wt[0],axis=0)  )*h 
+    Yt[1] = Y - np.sum(Wt[0],axis=1) - ( a * Y - np.sum(Wt[0],axis=1)  )*h 
+    Zt[1] = z - np.sum(Wt[1])
+    
+    #Setting the start values again for the next loop
+    Wt[0] = Wt[1]
+    Xt[0] = Xt[1]
+    Yt[0] = Yt[1]
+    Zt[0] = Zt[1]
+    Stim = np.zeros((n,n))
+     
+    WtOverTime[WtCounter] = Wt[0]
+    WtCounter += 1
+#----Factorcalculation of how much the light sensed effects the vehicle-------
+ 
+    Green = Wt[0][0,10]  * 10**-2 # Green-Left
+    Green =+ Wt[0][0,20]  * 10**-2 # Green-Right
+
+    Red = Wt[0][0,30]  * 10**-2 # Red-Left
+    Red =+ Wt[0][0,40]  * 10**-2 # Red-Right
+    
+    Blue = Wt[0][0,50]  * 10**-2 # Blue-Left
+    Blue =+ Wt[0][0,60]  * 10**-2 # Blue-Right
+    
+#---Light sensor outputs weighted by the Factor into Speeds ----------------------------------
+    # green crossed
+    leftspeedgreen =  Green * lsValues[0]/100*3 
+    rightspeedgreen =  Green * lsValues[1]/100*3
+    #red paralell
+    leftspeedred =  Red * lsValues[2]/100*3 
+    rightspeedred = Red * lsValues[3]/100*3 
+    #blue crossed
+    leftspeedblue = Blue * lsValues[4]/100*3
+    rightspeedblue = Blue * lsValues[5]/100*3
+    
+# -----------Obstical detection -------------------------------------------------
+    left_obstacle = dsValues[0] < 700.0
+    if left_obstacle and Distance_counter_right == 0:
+        Distance_counter_left = TurnCountArray[TurnCounter] #Chooses how often to turn
+        TurnCounter+=1
+        if TurnCounter == 99: #Resets the turncounter to start the Array again
+            TurnCounter = 0 
+        
+    right_obstacle = dsValues[1] < 700.0
+    if right_obstacle and Distance_counter_left == 0:
+        Distance_counter_right = TurnCountArray[TurnCounter]
+        TurnCounter+=1
+        if TurnCounter == 99: #Resets the turncounter to start the Array again
+            TurnCounter = 0 
+    
+    # if an obstical is detected it turns away from it
+    if Distance_counter_left > 0:
+        leftspeed = MAX_SPEED
+        rightspeed = -MAX_SPEED# + rightspeedblue)/3
+        Distance_counter_left -=1 
+    elif Distance_counter_right > 0:
+        leftspeed = -MAX_SPEED #+ leftspeedblue)/3
+        rightspeed = MAX_SPEED
+        Distance_counter_right -=1
+        
+#----------------------------------------------------------------------------        
+    # Allucate the speeds
+    # the speeds will be inhibitory and substacted from the MAX_SPEED
+    else:
+        SPEED_SUM_Left = BatterieSpeed + (leftspeedgreen ) + (leftspeedred) + leftspeedblue
+        SPEED_SUM_right = BatterieSpeed + (rightspeedgreen ) + (rightspeedred) + rightspeedblue
+        
+        # The robot should not drive backwords so an inhibition greater then 10 is impossible
+        if SPEED_SUM_Left >= MAX_SPEED_Inhibition:
+            SPEED_SUM_Left = MAX_SPEED_Inhibition
+        if   SPEED_SUM_right >= MAX_SPEED_Inhibition:
+            SPEED_SUM_right = MAX_SPEED_Inhibition
+        
+        #MAX_speed inhibition
+        leftspeed = MAX_SPEED - SPEED_SUM_Left
+        rightspeed = MAX_SPEED - SPEED_SUM_right 
+
+# ensuring the Speed does not exeed the maximum Speed
+    if leftspeed > MAX_SPEED:
+        leftspeed = MAX_SPEED
+    if rightspeed > MAX_SPEED:
+        rightspeed = MAX_SPEED
+    
+# -------Setting the Motors to the respective Speeds------------------------
+    leftMotor.setVelocity(leftspeed)
+    rightMotor.setVelocity(rightspeed)
+    
+    
+    # If the Robots gets to slow it starts forgetting more/Network activity ramps up
+    if leftspeed + rightspeed < 1 and robot.batterySensorGetValue() < LastBatterie:
+        
+        Penalty +=1
+        ß += ß/1000 
+        
+        #ensures the Network activity/forgetting stays in a certain range
+        if ß < 0.01:
+            ß = 0.01
+        if ß > 10:
+            ß = 10
+        
+#--------VEHICLE-STEERING-AND-NETWORK-UPDATING-END-----------------------------    
+    
+    #The fill status of the batterie importend for the comparison if loaded
+    LastBatterie = robot.batterySensorGetValue()
+    
+#---------COMPASS----------------------------------------------------------------
+#the angle of the robot to the global north
+    """
+    north = compass.getValues()
+    rad = np.arctan2(north[1], north[0])
+    AngleToNorth = ( (rad - 1.5708) / np.pi *180)
+    if AngleToNorth < 0.0:
+        AngleToNorth += 360
+    # print(AngleToNorth )
+    """
+    
+    
+# ----------------PRINTING AND PLOTTING -----------------------------------------------
+    
+    Counter += 1
+    if Counter % 100 == 3: # 100 = every 3.2 seconds
+        
+        print("----------------------------",Counter)
+        print("Green=",Green)
+        print("Red=",Red)
+        print("Blue=",Blue)
+
+        
+        
+        
+        #################################################
+        
+        # prints out the matrix current state
+        im = plt.imshow(Wt[0])
+        plt.title('Connectivity Matrix at the moment')
+        plt.xlabel('10/20=Green - 30/40=Red - 50/60=Blue')
+        plt.ylabel('10/20=Green - 30/40=Red - 50/60=Blue')
+        plt.colorbar(im)
+        im.set_clim(0,100)
+        plt.savefig(filename,format="jpeg")
+        """
+        plt.show(block=False)
+        plt.pause(2) #shows the plot for X seconds
+        plt.close()
+        """
+        
+        
+        display.imageLoad(filename+".jpeg")
+        #display.imagePaste(filename+".png", DisplayWidthd, DisplayHeight, False)
+        
+        
+        ##################################################
+        """
+        # Barchart of the Values
+        # create dataset
+        height = [Green, Red, Blue]
+        bars = ('Green', 'Red', 'Blue')
+        x_pos = np.arange(len(bars))
+        # Create bars and choose color
+        plt.bar(x_pos[0], height[0], color = ("green"))
+        plt.bar(x_pos[1], height[1], color = ("red"))
+        plt.bar(x_pos[2], height[2], color = ("blue"))
+
+        # Add title and axis names
+        plt.title('Strengh of connection/inhibition')
+        plt.xlabel('Color Sensors')
+        plt.ylabel('Numbers of Connections')
+        # Create names on the x axis
+        plt.xticks(x_pos, bars)
+        # Show graph
+        plt.show(block=False)
+        plt.pause(10) #shows the plot for X seconds
+        plt.close()
+        """
+        Green = str(Green)
+        Blue = str(Blue)
+        Red = str(Red)
+
+        f.write("Green=" + Green + " Red="+ Red  +" Blue=" + Blue + "\n")
+        
+        print("Batterie=",LastBatterie)
+        print("b=",b)
+        print("ß=",ß)
+        print("a=",a)
+        print("Penalty=",Penalty)
+        
+        if Counter == 225003:
+           LastBatterie = 0
+           Penalty = str(Penalty)
+           print("Counter=",Counter)
+           f.write(Penalty)
+           
+           
+        if LastBatterie == 0:
+            f.close()
+            np.save(filename, WtOverTime)
